@@ -186,8 +186,31 @@ def DFS(state: Board) -> Board:
     Returns:
         either None in the case of invalid input or a solved board
     """
-    pass
+    if state.goal_test():
+        return state
+    
+    row, col = state.find_most_constrained_cell()
 
+    if isinstance(state.rows[row][col], int):
+        return None
+    
+    for value in state.rows[row][col]:
+        state.update(row, col, value)
+
+        result = DFS(state)
+        if result:
+            return result
+        
+        state.rows[row][col] = list(range(1, 10))
+
+        for i in range(state.size):
+            state.rows[row][i] = list(range(1, 10))
+            state.rows[i][col] = list(range(1, 10))
+        
+        for r, c in state.subgrid_coordinates(row, col):
+            state.row[r][c] = list(range(1, 10))
+
+        return None
 
 def BFS(state: Board) -> Board:
     """Performs a breadth first search. Takes a Board and attempts to assign values to
